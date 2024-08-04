@@ -34,7 +34,7 @@ i2c_master_bus_handle_t bus_handle;
 #define I2S_PORT I2S_NUM_0
 
 // Define input buffer length
-#define bufferLen 64
+#define bufferLen 512
 int16_t sBuffer[bufferLen];
 
 wm8960_inst_t codec0;
@@ -128,10 +128,10 @@ void codec_setup()
   wm8960_enableHeadphones(&codec0);
   wm8960_enableOUT3MIX(&codec0); // Provides VMID as buffer for headphone ground
 
-  printf("Volume set to +0dB");
-  wm8960_setHeadphoneVolumeDB(&codec0, 0.00);
+  printf("Volume set to +0dB\n");
+  wm8960_setHeadphoneVolumeDB(&codec0, -32.0);
 
-  printf("&codec0 Setup complete. Listen to left/right INPUT1 on Headphone outputs.");
+  printf("&codec0 Setup complete. Listen to left/right INPUT1 on Headphone outputs.\n");
 }
 
 void i2s_install() {
@@ -170,20 +170,20 @@ void i2s_setpin() {
 
 void app_main(void)
 {
-    // SETUP
-    printf("Example 8 - I2S Passthough");
-    ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
+  // SETUP
+  printf("Example 8 - I2S Passthough\n");
+  ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
 
   wm8960_init(&codec0);
   if (wm8960_begin(&codec0, bus_handle) == false) //Begin communication over I2C
   {
-    printf("The device did not respond. Please check wiring.");
+    printf("The device did not respond. Please check wiring.\n");
     abort();
   }
-  printf("Device is connected properly.");
+  printf("Device is connected properly.\n");
 
   codec_setup();
-
+  printf("Codec setup done \n");
   // Set up I2S
   i2s_install();
   i2s_setpin();
@@ -204,8 +204,11 @@ void app_main(void)
       // If there was an I2S write error, let us know on the serial terminal
       if (result_w != ESP_OK)
       {
-        printf("I2S write error.");
+        printf("I2S write error.\n");
       }
+    }
+    else {
+      printf("I2S read error.\n");
     }
     // DelayMicroseconds(300); // Only hear to demonstrate how much time you have 
     // to do things.

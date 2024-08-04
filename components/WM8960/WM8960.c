@@ -103,21 +103,24 @@ bool wm8960_init(wm8960_inst_t *wm8960_inst)
   for (int i = 0; i < WM8960_NUM_REGS; i++){
     wm8960_inst->_registerLocalCopy[i] = _registerDefaults[i];
   }
+  printf("init done\n");
   return true;
 }
 
 bool wm8960_begin(wm8960_inst_t *wm8960_inst, i2c_master_bus_handle_t bus_handle)
 {
   // Probe for device
+  printf("probing for device\n");
   ESP_ERROR_CHECK(i2c_master_probe(bus_handle, WM8960_ADDR, 100));
-  
+  printf("probe done\n");
   i2c_device_config_t dev_cfg = {
     .dev_addr_length = I2C_ADDR_BIT_LEN_7,
     .device_address = WM8960_ADDR,
     .scl_speed_hz = WM8960_FREQ,
   };
-
+  printf("adding i2c device\n");
   ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &wm8960_inst->i2c_dev));
+  printf("add i2c device done\n");
   // todo: due to usage of ESP_ERROR_CHECK this will now always return true or abort(), update doc?
   return true;
 }
